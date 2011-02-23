@@ -1,0 +1,27 @@
+\newcommand\instruction[1]{\textsc{#1}}%
+\chapter{What is a Computer?}
+
+To the post office, it might be a four pound parcel; to the hardware engineer,
+a diagram of components, engineered to work together; for a programmer, it is
+mostly a composition of three parts: (1) memory, (2) the processor, and (3)
+magic.
+
+\section{Magic}
+
+So far, in this chapter, we have referred to many aspects of computers as
+\textit{magic}, namely everything that had to deal with input/output (often
+abbreviated as \textsc{io}). We now look at how this magic is achieved.
+
+All of the magic is achieved through specialty hardware functionality. For
+example, the processor might have a special pair of \instruction{in} and
+\instruction{out} instructions, which are used to read and write to devices.
+This was used in earlier Intel processors, but recent models tend to use
+\emph{memory-mapped \textsc{io}}.
+
+In memory mapped \textsc{io}, the \textsc{cpu} behaves as if it was writing to
+a memory address, but instead of actually writing to memory, it sends commands
+to the device. Simple devices such as mice or keyboards will have simple
+electronics, but others, such as printers, will often have a power processor
+and some internal memory of its own. In any case, the device will know how to
+handle the incoming commands.
+
