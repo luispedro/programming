@@ -80,6 +80,66 @@ argument with the result of adding it to its second argument\footnote{How could
 you handle the case where you do not want to lose any of the arguments, but
 still get the result of the addition? }
 
+\begin{exercise}
+How would you perform addition on a machine that has only a \instruction{inc}
+and a \instruction{dec} instruction (which increments and decrements its
+argument) and the conditional jump instructions \instruction{jz} and
+\instruction{jnz}? No \instruction{mov} or \instruction{add} exist in this
+hypothetical machine. Your arguments are in cells~0 and~1, and your result
+should be in cell~2. It is acceptable to change the values in~$M[0]$ and
+$M[1]$.
+\begin{solution}
+\begin{verbatim}
+inc M[0]
+dec M[1]
+jz mov1pre
+mov0:
+inc M[2]
+mov1pre:
+inc M[1]
+dec M[1]
+jz done
+mov1:
+dec M[0]
+jnz mov0
+mov1:
+inc M[1]
+dec M[0]
+jnz mov1
+done:
+\end{verbatim}
+
+Note the trick we use at the beginning to check whether an argument is zero:
+increment and decrement it.
+\end{solution}
+\end{exercise}
+
+\begin{exercise}
+How would you change the program you wrote to make sure that, at the end of it,
+the input cells have their original values? (\emph{Hint}: you can use extra
+cells as scratch space).
+\begin{solution}
+The way to approach this is the following: first copy cell 0 into cell 3, and
+cell 1 into 4. Then, you can use the previous program to add 3 and~4 into 2.
+
+So, how do you copy a cell? You copy $M[0]$ into two cells ($M[3]$ and $M[4]$)
+and then you copy $M[4]$ back. Notice that we temporarily erase the value in
+$M[0]$ and then write it back!
+
+\begin{verbatim}
+copy0first:
+inc M[3]
+inc M[4]
+dec M[0]
+jnz copy0first
+copy0second:
+inc M[0]
+dec M[4]
+jnz copy0second
+\end{verbatim}
+\end{solution}
+\end{exercise}
+
 \section{Magic}
 
 So far, in this chapter, we have referred to many aspects of computers as
