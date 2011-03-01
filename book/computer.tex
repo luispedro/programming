@@ -151,6 +151,10 @@ jnz copy0second
 \end{solution}
 \end{exercise}
 
+If you understood the above, then you understand the basics of how a computer
+works at the bit level. From now on, we are building up (from these details up
+to higher level concepts).
+
 \section{Memory \& The Processor}
 
 First, we review binary notation of numbers. Normally, we write a number as a
@@ -276,6 +280,36 @@ or as sound or as a program? You do not. Memory only hold values,
 interpretation must be elsewhere. In fact, this is one source of many problems,
 as we will see.
 
+\medskip
+
+We can now put it all together. A computer has memory and a processor. Part of
+the memory encodes the program that the processor is executing. The processor
+just performs the following, over and over again: (1) read the memory location
+for its next instruction, (2) execute it, eventually changing the value of
+other memory locations or the place that it is going to read its next
+instruction from. All of these instructions are very simple, but the processor
+can execute very many of them, very fast. A 2.3 GHz processor executes 2.3
+trillion instructions per second (if these words are about 30cm away from your
+eyes, then a modern processor will execute two instructions in the time it
+takes the light to travel from these pages to your eyes).
+
+The processor has a few special cells, called \emph{registers} that store the
+\emph{instruction pointer}, the memory address of the next instruction and
+\emph{flags}. A \emph{flag} is a bit storing special state. For example,
+whenever an arithmetic operation results in a zero value, the \emph{zero flag}
+is set to true. This is how the \instruction{jnz} operation we saw before
+really means: jump if the zero flag is not true. And ``jumping'' is simply a
+matter of setting the value of the instruction pointer.
+
+In fact, the registers are often used for one other reason: they are physically
+located inside the processor and their use is much faster than accessing the
+memory. Therefore, in addition to the special registers outlined above, a
+processor will typically have a few \emph{general purpose registers}. The
+typical pattern of actually executing an operation is to first load the
+relevant values from memory, operate on them in registers, and, finally, write
+them back. In fact, some processor architectures only support this mode of
+operation (with no operations directly on memory allowed).
+
 \section{Programming Languages}
 
 The basic programs we saw above were written in assembly language. Assembly is
@@ -304,7 +338,24 @@ performed and through \emph{magic}, the result (14) is printed on the screen.
 
 The interpreter takes care of details such as assigning memory locations to
 human-readable names and many other details that would be very bothersome to
-keep track of and that a computer can do for you.
+keep track of and that a computer can do for you. After this chapter, we will
+only talk about higher level languages. It is good to know about what happens
+under the hood, but often, we will only be interested in working at the higher
+level.
+
+Instead of being interpreted, a program can also be \emph{compiled}. This means
+that there is another program, the \emph{compiler}, which takes the text of the
+program, transforms it into the machine instructions which perform the
+operation just described and writes them out in machine code. Then, it can be
+directly executed by the machine, which can, potentially, be faster. The
+programs you use on a daily basis are a mixture of compiled and interpreted.
+
+At this point, you might be asking: how do you write a compiler or an
+interpreter? It seems you would need a compiler for that? How does the first
+compiler appear? The general technique is called \emph{bootstrapping} from the
+expression \emph{to pull yourself up by your bootstraps}. First, someone writes
+a compiler for a very simple language in assembly. Then, in that simple
+language, you can write compilers for more complex languages.
 
 \section{Magic}
 
