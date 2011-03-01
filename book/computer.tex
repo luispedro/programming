@@ -62,10 +62,10 @@ Here is how the previous program could look like in a more ``real'' programming
 language:
 
 \begin{verbatim}
-mov M[2], 0\\
-performaddition:\\
-add M[1], M[2]\\
-dec M[0] \\
+mov M[2], 0
+performaddition:
+add M[1], M[2]
+dec M[0]
 jnz performaddition
 \end{verbatim}
 
@@ -79,9 +79,13 @@ The first instruction \instruction{mov} moves a value into a cell. In this
 case, moves the value 0 into the cell \instruction{M[2]}. Then we have a label
 for the next instruction (which will be useful later). The \instruction{add}
 instruction performs in-place addition (i.e., replaces the content of its first
-argument with the result of adding it to its second argument\footnote{How could
+argument with the result of adding it to its second argument.\footnote{How could
 you handle the case where you do not want to lose any of the arguments, but
-still get the result of the addition? }
+still get the result of the addition?} The \instruction{dec} instruction
+decrements its argument (i.e., subtracts one from it). Finally,
+\instruction{jnz} stands for \emph{jump if not zero}. If the result of the
+previous operation (in this case, \instruction{dec}) is \emph{not zero}, then
+it jumps to the instruction given by the label \instruction{performaddition}.
 
 \begin{exercise}
 How would you perform addition on a machine that has only a \instruction{inc}
@@ -158,7 +162,9 @@ the left) has value~1, the second position value~2, then~4, then~8\ldots
 \]
 
 Sometimes, too much is made of binary notation. In this book, all that matters
-is that you understand that numbers can be expressed as binary.
+is that you understand that numbers can be expressed as binary.\footnote{Read
+the mathemical foreword (page~\pageref{chpt:mathforeword}), if you do not
+understand the $2^3$ notation.}
 
 We can now start formalising things a bit more. What we called ``cells'' above
 are what is normally called memory. The first thing to realise it that the
