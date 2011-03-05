@@ -5,19 +5,20 @@ a diagram of components, engineered to work together; for a programmer, it is
 mostly a composition of three parts: (1) memory, (2) the processor, and (3)
 magic.
 
-\section{Assembly Code}
+In this first chapter, before we actually do any real programming, we will look
+more closely under the hood at what a computer is.
 
-Get a sheet of paper and draw three squares:
-
+\section{Assembly Code}%
 \newcommand\dorect[1]{\framebox[6em]{\ensuremath{#1}\strut\hfill}}%
 \newcommand\dostate[3]{\dorect{#1}\hspace{2pt}\dorect{#2}\hspace{2pt}\dorect{#3}}
+
+Get a sheet of paper and draw three squares (or just follow along here):
 
 \[
 \dostate{}{}{}
 \]
 
-Now, write 3 in the first square, 4 in the second:
-
+First, write 3 in the first square, 4 in the second:
 
 \[
 \dostate{3}{4}{\strut}
@@ -36,8 +37,10 @@ by one-minus).
 \item If the first square is zero, we are done. Otherwise, go to 2.
 \end{enumerate}
 
-\emph{Voilà}, this is your first program. Here is what happens when you run through it:
+\emph{Voilà}, this is your first program. Here is what happens when you execute
+through it:
 
+\smallskip
 \begin{tabular}{ll}
 \dostate{3}{4}{0} & (step 1)\\
 \dostate{3}{4}{0} & (step 2, 4+0=4)\\
@@ -53,6 +56,7 @@ by one-minus).
 \dostate{\not3 \not2 \not1 \, 0}{4}{\not0 \not4 \not8 \, 12} & (step 4)\\
 \dostate{\not3 \not2 \not1 \, 0}{4}{\not0 \not4 \not8 \, 12} & (step 5, and we are done)
 \end{tabular}
+\smallskip
 
 What we are doing here, as you may have figured out, is multiplying the two
 numbers in the first cells, by repeated addition. We transformed a basic
@@ -62,8 +66,9 @@ processor can execute and building them up to more complex
 operations.\footnote{Nowadays, most processors already have instructions that
 perform multiplication, but at one point, they did use repeated addition.}
 
-Here is how the previous program could look like in a more ``real'' programming
-language:
+Here is how the previous program could look like in a more real programming
+language. In fact, this is almost a real programming language, albeit a
+severely limited one:
 
 \begin{verbatim}
 mov M[2], 0
@@ -75,9 +80,10 @@ jnz performaddition
 
 Let's decode this a bit more carefully. The first thing you may have noticed is
 that I have called the first cell 0, the second cell 1, and the third cell 2.
-This may seem strange, but there are good reasons for this.\footnote{
-E. Dijkstra, a computing pioneer, wrote a long article about this, available at
-http://www.cs.utexas.edu/users/EWD/transcriptions/EWD08xx/EWD831.html}.
+This may seem strange, but there are good reasons for starting to count at
+zero, so we might as well start now.\footnote{ E. Dijkstra, a computing
+pioneer, wrote a long article about this, available
+\href{http://www.cs.utexas.edu/users/EWD/transcriptions/EWD08xx/EWD831.html}{here}.}.
 
 The first instruction \instruction{mov} moves a value into a cell. In this
 case, moves the value 0 into the cell \instruction{M[2]}. Then we have a label
@@ -100,6 +106,10 @@ hypothetical machine. Your arguments are in cells~0 and~1, and your result
 should be in cell~2. It is acceptable to change the values in~$M[0]$ and
 $M[1]$.
 \begin{solution}
+Imagine that the cells contain little glass beads. You take one from the first
+cell and put it in the second. Repeat this until there are no beads in the
+first cell.
+
 \begin{verbatim}
 inc M[0]
 dec M[1]
@@ -152,27 +162,54 @@ jnz copy0second
 \end{exercise}
 
 If you understood the above, then you understand the basics of how a computer
-works at the bit level. From now on, we are building up (from these details up
-to higher level concepts).
+works at the lowest level. From now on, we are building up (from these details
+up to higher level concepts).
 
 \section{Memory \& The Processor}
 
-First, we review binary notation of numbers. Normally, we write a number as a
-sequence of decimal digits. For example, $245$ is interpreted to mean: $2
-\times 100 + 4 \times 10 + 5 \times 1$. Starting from the left, each position
-has a value that is 10~times larger than the previous position. Binary numbers,
-such as $1101_2$ (we will use the little $_2$-subscript or a $_{10}$ subscript
-to emphacise which basis we are using) as the same. The first position (from
-the left) has value~1, the second position value~2, then~4, then~8\ldots
+Normally, we write a number as a sequence of decimal digits. For example, $245$
+is interpreted to mean: $2 \times 100 + 4 \times 10 + 5 \times 1$. Starting
+from the left, each position has a value that is 10~times larger than the
+previous position. Binary numbers, such as $1101_2$ (we will use the little
+$_2$-subscript or a $_{10}$ subscript to emphacise which basis we are using) as
+the same. The first position (from the left) has value~1, the second position
+value~2, then~4, then~8\ldots Another way to put this is that the first
+position has value $2^0$, the second $2^1$, the third
+$2^2$,\ldots\footnote{Read the mathematical foreword
+(page~\pageref{chpt:mathforeword}), if you do not understand the $2^3$
+notation.}
 
 \[
 1101_2 = 1 \times 2^{0}  + 0 \times 2 + 2^1 \times 4 + 2^2 \times 2^3 = 13_{10}
 \]
 
-Sometimes, too much is made of binary notation. In this book, all that matters
-is that you understand that numbers can be expressed as binary.\footnote{Read
-the mathemical foreword (page~\pageref{chpt:mathforeword}), if you do not
-understand the $2^3$ notation.}
+\begin{exercise}
+How would you write the following numbers in binary?
+
+\begin{itemize}
+\item 7
+\item 8
+\item 12
+\end{itemize}
+\begin{solution}
+\begin{itemize}
+\item $111_2$
+\item $1000_2$
+\item $1100_2$
+\end{itemize}
+\end{solution}
+\end{exercise}
+
+\begin{exercise}
+How can you quickly check whether a number, written in binary, is odd or even?
+\begin{solution}
+Even numbers end in a 0, odd numbers in a 1.
+\end{solution}
+\end{exercise}
+
+Sometimes, too much is made of binary notation. For the moment, all that
+matters is that you understand that numbers can be expressed as
+binary.
 
 We can now start formalising things a bit more. What we called ``cells'' above
 are what is normally called memory. The first thing to realise it that the
@@ -180,12 +217,15 @@ cells can only store a limited set of numbers. Physically, each cell is
 composed of little wires where you either have electric current or you do not.
 If you do, we say that this part of the cell is~1, otherwise, we call
 it~0.\footnote{This convention is purely arbitrary and other technologies
-exist, some of which have called existence of current~0 and its absence~1.}
-Looking at the state of each wire, we get a \emph{bit} of information (the
-simplest building block, something that has only two possible states). By
-convention, each cell has 8~little wires, and can store numbers such as
-$01011101_2$ (which is $93_{10}$). If you work it out, the maximum number that
-can be stored ($11111111_2$) is 255.
+exist, some of which have called existence of current~0 and its absence~1. Some
+are not based on little wires, but on a magnetic field (North for 1, South for
+0; or vice-versa). All of these possibilities, though, are \emph{binary}: one
+state for 0, another for 1, and no other possibilities.} Looking at the state
+of each wire, we get a \emph{bit} of information (the simplest building block,
+something that has only two possible states). By convention, each cell has
+8~little wires, and can store numbers such as $01011101_2$ (which is
+$93_{10}$). If you work it out, the maximum number that can be stored
+($11111111_2$) is 255, for a total of 256 possible values (including zero).
 
 We call an 8-bit number, a \emph{byte}. There is nothing magical about it being
 8~bits. In the past, machines existed with 6~bit bytes. But eight became
@@ -194,38 +234,45 @@ this pattern again and again: things are a certain way because it is convenient
 that we all agree on a common definition, but the definition is more or less
 arbitrary.
 
-Each cell can save a single byte (a number between 0 and 255). When we say a
+Each cell can save a single byte (a value between 0 and 255). When we say a
 computer has a 1~Gigabyte memory, we mean that it has about a trillion of these
-cells. It is also important to note that the cells are ordered. They are not
-just a jumbled pile, but more like graph paper. The first cell is numbered~0,
-the second cell~1, all the way to 1073741823 (if you have that many in your
+cells.
+
+It is also important to note that the cells are ordered. They are not just a
+jumbled pile, but more like graph paper. The first cell is numbered~0, the
+second cell~1, all the way to 1073741823 (if you have that many in your
 computer).
-%\footnote{If the number 1073741823 seems odd, read the note on kilos
-%and megas.}
 
 \subsection{About kilos and megas}
+
+If the number 1073741823 in the previous paragraph seems odd, it's because of
+definition of Gigabyte.
 
 How many bytes does a kilobyte have? This question used to have a simple,
 clear, answer:~1024. It might have been a slight abuse of language to use the
 prefix ``kilo'', which normally means 1000 (in the metric system, a kilogram is
 1000 grams, a kilometer 1000 metres\ldots), but 1024 was the more meaningful
-unit. 1024 is $2^{10}$, so it's a nice round number ($1000000000_2$), while
-1000 is not ($1111101000_2$).
+unit. 1024 is $2^{10}$, which means that, in binary, it is a nice round number
+($1000000000_2$), while 1000 is not ($1111101000_2$).
 
 More recently, some felt that this was an unacceptable abuse and that the
 metric standard should be followed more closely and this resulted in complete
 confusion. While a kilobyte still mostly refers to 1024, sometimes it is now
 used to mean 1000 bytes. This is also why a 500~GB drive is identified as
 having less than 500~GB. The manufacturer is just using the definition that is
-most convenient for them.
+most convenient for them. At the moment, it is not possible to always know
+whether a kilobyte still refers to the old convention (1024) or the strict
+metric one (1000).
 
-To try to make sense of this mess, the new words kibibyte (and mebibyte, and
+To try to sort through of this mess, the new words kibibyte (and mebibyte, and
 gibibyte) were coined to mean $2^{10}$, $2^{20}$ and $2^{30}$. I have actually
 never heard anyone saying them out loud, but many programs use them
 (mostly their abbreviated forms KiB, MiB, and GiB). Everyone still says
-megabyte to mean $2^{20}$ Bytes. In fact, if the difference would matter, we
-always mean the old convention as decimal notation is foreign to the computer
-world. So, after all of this, we might get a new equilibrium between the old
+megabyte to mean $2^{20}$ bytes. In fact, if the difference would matter, we
+almost always mean the old convention as decimal notation is foreign to the
+computer world.
+
+After a few confusing years, we might get a new equilibrium between the old
 convention where everybody knew that kilobyte was 1024, the intermediate
 confusion where some people insisted on the non-standard standard of ``kilo is
 1000'' and nobody was ever sure what was meant, and a new compromise where we
@@ -251,34 +298,53 @@ sounds, and much more. In fact, it is not even clear how we could represent
 numbers greater than 255.
 
 To represent numbers greater than 255, we can simply use several cells
-together. If we use 2~cells, 2~Bytes, we can get numbers with 16~bits; Using
-4~cells, we can get numbers with 32~bits (up to 4 million, roughly); and with
-8~cells, we can get 64~bits. We could, of course, use a 5 Byte number, but,
+together. If we use 2~cells, 2~bytes, we can get numbers with 16~bits; Using
+4~cells, we can get numbers with 32~bits (up to 4 billion, roughly); and with
+8~cells, we can get 64~bits. We could, of course, use a 5 byte number, but,
 typically, we do not do that.
 
 So, what about non-numbers?  The answer is very simple: we represent these
-things using numbers. For example, for text, we can make up a mapping such that
-A is 0, B is 1\ldots and use that to represent a text.
+things using numbers! If fact, for a computer, nothing else exists but
+collections of bytes. For example, for text, we can make up a mapping such that
+A is 0, B is 1\ldots and use that to represent a text. Here is how we'd
+represent the title of this book:
+
+% title = "PROGRAMMING AN INTRODUCTION"
+% print " ".join(map(lambda c: str(ord(c)-ord('A')), title))
+15 17 14 6 17 0 12 12 8 13 6 27 0 13 27 8 13 19 17 14 3 20 2 19 8 14 13
+
+In this case, I used 27 to represent a space. Real systems also have a way to
+encode punctuation and lower versus upper-case letters.
+
+\medskip
 
 Pictures and sounds are also represented as a collection of numbers. A picture
 (a digital picture) is a rectangle of pixels (picture elements), which are
 small, single-colour blocks. We can represent each pixel with 3 numbers, one
 for the amount or red, one for green, and one for blue. Each pixel takes up 3
-Bytes. If an image has 2048 pixels across and is 1344 pixels tall, then we need
-7.85 MiB to store it. The first Byte will be the red component of the top-left
-corner, then its blue component,\ldots
+bytes. If an image has 2048 pixels across and is 1344 pixels tall, then we need
+7.85 MiB to store it. The first byte will be the red component of the top-left
+corner, then the green and then the blue components. Repeat a few million times
+and you have a representation of an image.
 
-We explore this aspect much more in later chapters.
+We explore representation of data much more in later chapters. We will have a
+large discussion just on how to represent text.
 
 What about programs? They are simply numbers too. There is a fixed set of
 instructions, so we might have a table assigning numbers to each of them, plus
-a way to encode their arguments.
+a way to encode their arguments. For the simple instructions we had before, we
+could say that the \instruction{mov} instruction is 0, the \instruction{add}
+instruction is 1, and encode its operands similarly.
 
 One question that you might have is the following: if you have a piece of
 memory with its values, how do you know whether you should interpret it as text
-or as sound or as a program? You do not. Memory only hold values,
-interpretation must be elsewhere. In fact, this is one source of many problems,
-as we will see.
+or as sound or as a program? Is the sequence of numbers 0 13 0 a piece of text
+of a computer instruction? You do not know. Memory only hold values,
+interpretation must be elsewhere. If you make a mistake, then you get a bunch
+of non-sense. You may already have run into an example of this by opening a
+file with the wrong program (files are, similarly, just a long sequence of
+bytes). The program mis-interprets the information in the file and displays
+what looks like garbage.
 
 \medskip
 
@@ -288,10 +354,11 @@ just performs the following, over and over again: (1) read the memory location
 for its next instruction, (2) execute it, eventually changing the value of
 other memory locations or the place that it is going to read its next
 instruction from. All of these instructions are very simple, but the processor
-can execute very many of them, very fast. A 2.3 GHz processor executes 2.3
-trillion instructions per second (if these words are about 30cm away from your
+can execute very many of them, very fast. A 2.3~GHz processor executes 2.3
+trillion instructions per second. If these words are about 30cm away from your
 eyes, then a modern processor will execute two instructions in the time it
-takes the light to travel from these pages to your eyes).
+takes the light to travel from these pages to your eyes. % This assumes light
+% in vaccuum; in air, it would actually be four instructions!
 
 The processor has a few special cells, called \emph{registers} that store the
 \emph{instruction pointer}, the memory address of the next instruction and
@@ -329,7 +396,7 @@ b = 3
 print a+4*b
 \end{verbatim}
 
-We can write this as a file (a collection of Bytes, i.e., numbers such that it
+We can write this as a file (a collection of bytes, i.e., numbers such that it
 encodes the above text). There is then a program, called an interpreter, which
 takes this program and is going to decode it and perform instructions such that
 some memory cell will contain the value 2 (which is called \code{a}), another
