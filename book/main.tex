@@ -3,6 +3,11 @@
 \usepackage[T1]{fontenc}
 \usepackage{ae,aecompl}
 \usepackage{amsmath}
+\usepackage{comment}
+
+\let\mypageref\pageref % Ah, the Joy of TeX
+\usepackage{hyperref}
+\def\pageref{\mypageref}
 
 \title{Programming\\An introduction}
 \author{Luis Pedro Coelho}
@@ -12,10 +17,11 @@
 \newenvironment{exercise}%
 {\textbf{Exercise}\hspace{2em}}%
 { }
-\newenvironment{solution}%
-{\par\textit{Solution}\hspace{2em}}%
-{ }
-
+%\newenvironment{solution}%
+%{\par\textit{Solution}\hspace{2em}}%
+%{ }
+\specialcomment{solution}{}{}
+\excludecomment{solution}
 
 \begin{document}
 \maketitle
