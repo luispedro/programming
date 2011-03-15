@@ -426,20 +426,68 @@ language, you can write compilers for more complex languages.
 
 \section{Magic}
 
-So far, in this chapter, we have referred to many aspects of computers as
-\textit{magic}, namely everything that had to deal with input/output (often
-abbreviated as \textsc{io}). We now look at how this magic is achieved.
+The computers we have discussed so far simply manipulate values in memory cells
+(either main memory or the special cells called registers). In order to
+communicate with the outside world, a computer must be able, however, of
+showing different images on a screen, receiving characters from a keyboard,
+movement from a mouse, or, even control a robotic arm. These tasks are
+collectively known as \textsc{input/output} or \textbf{\textsc{io}}.
 
-All of the magic is achieved through specialty hardware functionality. For
-example, the processor might have a special pair of \instruction{in} and
-\instruction{out} instructions, which are used to read and write to devices.
-This was used in earlier Intel processors, but recent models tend to use
-\emph{memory-mapped \textsc{io}}.
+All of these tasks, we will collectively refer to using the technical
+expression \emph{magic}.
+
+Magic is achieved through specialty hardware functionality. For example, the
+processor might have a special pair of \instruction{in} and \instruction{out}
+instructions, which are used to read and write to devices. This was used in
+earlier Intel processors, but recent models tend to use \emph{memory-mapped
+\textsc{io}}.
 
 In memory mapped \textsc{io}, the \textsc{cpu} behaves as if it was writing to
 a memory address, but instead of actually writing to memory, it sends commands
-to the device. Simple devices such as mice or keyboards will have simple
-electronics, but others, such as printers, will often have a power processor
-and some internal memory of its own. In any case, the device will know how to
-handle the incoming commands.
+to the device. Similarly, reading from memory will actually read input from the
+device.
+
+A device like a keyboard will send information as a sequence of bytes
+describing the keys pressed, while a mouse might send movements.
+
+\begin{exercise}
+Devise a binary encoding for a mouse. Imagine that every 10ms (or so), you must
+communicate with the main \textsc{cpu}. What would your communication look like?
+\begin{solution}
+Here is one possibility: every 10ms, you send how much the mouse moved (in
+milimeters) in the $x$ and $y$ directions (up-down and right-left, negative
+numbers using two's complement). We can imagine using 16bits, using the first 2
+bytes for $x$ and the second 2 bytes for $y$, leading to a 4-byte
+communication. For example $(10,0)$ would mean a $10mm$ move up, $(-4,-4)$
+would mean a $4mm$ down and $4mm$ left.
+
+Real mice are much more complex, but conceptually it is not that much
+different. Nowadays, a mouse will actually use the \textsc{usb} protocol, which
+specifies what bytes means and how you communicate in general (whatever the
+type of device).
+\end{solution}
+\end{exercise}
+
+Simple devices such as mice or keyboards will have simple electronics and
+simple commands, but others, such as printers, will often have a power
+processor and some internal memory of its own. You can send very complex
+commands to some printers.
+
+Why do we refer to it as \emph{magic} instead of \emph{sending information to
+input/output devices}? The reason is that the programmer is very rarely
+interacting with the hardware directly. Most of the time, you will be using
+prepared mechanisms to make it easy to do \textsc{io}. For example, all systems
+have a method whereby, given a human-readable string (such as a name) in
+memory, the will display the string to the user. Of course, underneath, it all
+involves drawing characters (more byte manipulation) and then communicating
+with a display device. However, that is hidden and we can just assume that
+there is this magic functionality that ``displays strings to the user.''
+
+\section{Conclusion}
+
+This chapter was different from all the following chapters. It hopefully
+provides the foundation for what follows, where we will start to program.
+
+\textbf{For a programmer, a computer is a collection of memory cells, a
+processor which manipulates them, and magic to communicate with the user.}
 
