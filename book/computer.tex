@@ -1,12 +1,15 @@
 \chapter{What is a Computer?}
 
-To the post office, it might be a four pound parcel; to the hardware engineer,
-a diagram of components, engineered to work together; for a programmer, it is
-mostly a composition of three parts: (1) memory, (2) the processor, and (3)
-magic.
-
 In this first chapter, before we actually do any real programming, we will look
 more closely under the hood at what a computer is.
+
+What is a computer? To the post office, it might be a four pound parcel; to the
+hardware engineer, a diagram of components, engineered to work together; for a
+programmer, it is mostly a composition of three parts: (1) memory, (2) the
+processor, and (3) magic.
+
+Before we even look at actual computers, we will play a simple game, where we
+behave like computers.
 
 \section{Assembly Code}%
 \newcommand\dorect[1]{\framebox[6em]{\ensuremath{#1}\strut\hfill}}%
@@ -37,8 +40,8 @@ by one-minus).
 \item If the first square is zero, we are done. Otherwise, go to 2.
 \end{enumerate}
 
-\emph{Voilà}, this is your first program. Here is what happens when you execute
-through it:
+\emph{Voilà}, this is your first program. Here is what happens when you perform
+the actions. The technical word is \emph{execute}:
 
 \smallskip
 \begin{tabular}{ll}
@@ -61,9 +64,9 @@ through it:
 What we are doing here, as you may have figured out, is multiplying the two
 numbers in the first cells, by repeated addition. We transformed a basic
 operation (addition), into a slightly more complex operation (multiplication).
-This is what programming is: taking some basic operations, that the computer
-processor can execute and building them up to more complex
-operations.\footnote{Nowadays, most processors already have instructions that
+This is what programming is: \emph{take some basic operations, that the
+computer processor can execute and build on it to perform a more complex
+operation}.\footnote{Nowadays, most processors already have instructions that
 perform multiplication, but at one point, they did use repeated addition.}
 
 Here is how the previous program could look like in a more real programming
@@ -71,31 +74,56 @@ language. In fact, this is almost a real programming language, albeit a
 severely limited one:
 
 \begin{verbatim}
-mov M[2], 0
-performaddition:
-add M[1], M[2]
-dec M[0]
-jnz performaddition
+1. mov M[2], 0
 \end{verbatim}
 
-Let's decode this a bit more carefully. The first thing you may have noticed is
-that I have called the first cell 0, the second cell 1, and the third cell 2.
-This may seem strange, but there are good reasons for starting to count at
-zero, so we might as well start now.\footnote{ E. Dijkstra, a computing
-pioneer, wrote a long article about this, available
+This moves the number zero to the cell $M[2]$. I will called the first cell 0,
+the second cell 1, and the third cell 2. This may seem strange, but there are
+good reasons for starting to count at zero, so we might as well start
+now.\footnote{ E. Dijkstra, a computing pioneer, wrote a long article about
+this, available
 \href{http://www.cs.utexas.edu/users/EWD/transcriptions/EWD08xx/EWD831.html}{here}.}.
 
-The first instruction \instruction{mov} moves a value into a cell. In this
-case, moves the value 0 into the cell \instruction{M[2]}. Then we have a label
-for the next instruction (which will be useful later). The \instruction{add}
-instruction performs in-place addition (i.e., replaces the content of its first
-argument with the result of adding it to its second argument.\footnote{How could
-you handle the case where you do not want to lose any of the arguments, but
-still get the result of the addition?} The \instruction{dec} instruction
-decrements its argument (i.e., subtracts one from it). Finally,
-\instruction{jnz} stands for \emph{jump if not zero}. If the result of the
-previous operation (in this case, \instruction{dec}) is \emph{not zero}, then
-it jumps to the instruction given by the label \instruction{performaddition}.
+You will also notice that the destination comes first. You can imagine this
+being written in the following way:
+%
+\[
+M[2] \leftarrow 0
+\]
+which might make more sense.
+
+Our program continues:
+
+\begin{verbatim}
+2. add M[1], M[2]
+\end{verbatim}
+
+The \instruction{add} instruction performs in-place addition (i.e., replaces
+the content of its first argument with the result of adding it to its second
+argument.\footnote{How could you handle the case where you do not want to lose
+any of the arguments, but still get the result of the addition?} In symbolic
+notation, it looks like this:
+
+\[
+M[1] \leftarrow M[1] + M[2]
+\]
+
+The next instruction is a simple one:
+
+\begin{verbatim}
+3. dec M[0]
+\end{verbatim}
+
+The \instruction{dec} instruction decrements its argument (i.e., subtracts one
+from it).
+
+\begin{verbatim}
+4. jnz 2
+\end{verbatim}
+
+Finally, \instruction{jnz} stands for \emph{jump if not zero}. If the result of
+the previous operation (in this case, \instruction{dec}) is \emph{not zero},
+then it jumps to the instruction number $2$.
 
 \begin{exercise}
 How would you perform addition on a machine that has only a \instruction{inc}
@@ -110,28 +138,31 @@ Imagine that the cells contain little glass beads. You take one from the first
 cell and put it in the second. Repeat this until there are no beads in the
 first cell.
 
+There is a tricky case when either of the arguments are zero. If you have
+answered the question before looking at the solution below, make sure that your
+solution handles this case correctly.
+
+Here is my proposal:
+
 \begin{verbatim}
-inc M[0]
-dec M[1]
-jz mov1pre
-mov0:
-inc M[2]
-mov1pre:
-inc M[1]
-dec M[1]
-jz done
-mov1:
-dec M[0]
-jnz mov0
-mov1:
-inc M[1]
-dec M[0]
-jnz mov1
-done:
+1. inc M[0]
+2. dec M[0] # This checks whether the argument in M[0] was zero
+3. jz 7
+4. inc M[2]
+5. dec M[0]
+6. jnz 4
+7. inc M[1]
+7. dec M[1]
+8. jz 14
+9. inc M[2]
+10. dec M[1]
+10. jnz 9
+12.
 \end{verbatim}
 
 Note the trick we use at the beginning to check whether an argument is zero:
-increment and decrement it.
+increment and decrement it. Of course, real processors have an instruction that
+can be used to check directly whether a cell is zero or not.
 \end{solution}
 \end{exercise}
 
@@ -147,16 +178,18 @@ So, how do you copy a cell? You copy $M[0]$ into two cells ($M[3]$ and $M[4]$)
 and then you copy $M[4]$ back. Notice that we temporarily erase the value in
 $M[0]$ and then write it back!
 
+Here is how you would copy the cells. We do not check for the case where the
+values are zero, but, in a real application, we should (see previous answer for
+how to do it):
+
 \begin{verbatim}
-copy0first:
-inc M[3]
-inc M[4]
-dec M[0]
-jnz copy0first
-copy0second:
-inc M[0]
-dec M[4]
-jnz copy0second
+1. inc M[3]
+2. inc M[4]
+2. dec M[0]
+3. jnz 1
+4. inc M[0]
+5. dec M[4]
+6. jnz 4
 \end{verbatim}
 \end{solution}
 \end{exercise}
@@ -164,6 +197,13 @@ jnz copy0second
 If you understood the above, then you understand the basics of how a computer
 works at the lowest level. From now on, we are building up (from these details
 up to higher level concepts).
+
+While working through the exercises, you will also get the notion that working
+at this level (often called the low-level, where we are manipulating the cells
+directly) can get very tedious. Fortunately, in the next chapter we will start
+dwelving into real programming languages where the boring details are taken
+care of automatically. Right now, we are learning about how the computer works,
+actual programming will come later.
 
 \section{Memory \& The Processor}
 
@@ -221,32 +261,33 @@ exist, some of which have called existence of current~0 and its absence~1. Some
 are not based on little wires, but on a magnetic field (North for 1, South for
 0; or vice-versa). All of these possibilities, though, are \emph{binary}: one
 state for 0, another for 1, and no other possibilities.} Looking at the state
-of each wire, we get a \emph{bit} of information (the simplest building block,
-something that has only two possible states). By convention, each cell has
-8~little wires, and can store numbers such as $01011101_2$ (which is
-$93_{10}$). If you work it out, the maximum number that can be stored
-($11111111_2$) is 255, for a total of 256 possible values (including zero).
+of each wire, we get a \emph{bit} of information. A bit is either a zero or a
+one. By convention, each cell has 8~little wires, and can store numbers such as
+$01011101_2$ (which is $93_{10}$). If you work it out, the maximum number that
+can be stored ($11111111_2$) is 255, for a total of 256 possible values
+(including zero).
 
 We call an 8-bit number, a \emph{byte}. There is nothing magical about it being
-8~bits. In the past, machines existed with 6~bit bytes. But eight became
-popular, and is now a widely used convention. Throughout the book, you will see
-this pattern again and again: things are a certain way because it is convenient
-that we all agree on a common definition, but the definition is more or less
-arbitrary.
+8~bits. In the past, machines existed with 6~bit bytes or other sizes. But
+eight became popular, and is now a widely used convention. Throughout the book,
+you will see this pattern again and again: things are a certain way because it
+is convenient that we all agree on a common definition, but the definition is
+more or less arbitrary.
 
-Each cell can save a single byte (a value between 0 and 255). When we say a
-computer has a 1~Gigabyte memory, we mean that it has about a trillion of these
-cells.
+Thus, each memory cell can save a single byte (a value between 0 and 255). When
+we say a computer has a 1~Gigabyte memory, we mean that it has about a trillion
+of these cells.
 
 It is also important to note that the cells are ordered. They are not just a
 jumbled pile, but more like graph paper. The first cell is numbered~0, the
 second cell~1, all the way to 1073741823 (if you have that many in your
-computer).
+computer). This is why we could have programs like the one above, where we
+refer to cell 0 (or, in our notation, $M[0]$).
 
 \subsection{About kilos and megas}
 
-If the number 1073741823 in the previous paragraph seems odd, it's because of
-definition of Gigabyte.
+If the number 1073741823 in the previous paragraph seems odd, that is because
+of definition of Gigabyte.
 
 How many bytes does a kilobyte have? This question used to have a simple,
 clear, answer:~1024. It might have been a slight abuse of language to use the
@@ -258,24 +299,24 @@ unit. 1024 is $2^{10}$, which means that, in binary, it is a nice round number
 More recently, some felt that this was an unacceptable abuse and that the
 metric standard should be followed more closely and this resulted in complete
 confusion. While a kilobyte still mostly refers to 1024, sometimes it is now
-used to mean 1000 bytes. This is also why a 500~GB drive is identified as
-having less than 500~GB. The manufacturer is just using the definition that is
-most convenient for them. At the moment, it is not possible to always know
-whether a kilobyte still refers to the old convention (1024) or the strict
-metric one (1000).
+used to mean 1000 bytes. This is also why a 500~GB drive is identified by your
+computer as having less than 500~GB. The manufacturer is just using the
+definition that is most convenient for them. At the moment, it is not possible
+to always know whether a kilobyte still refers to the old convention (1024) or
+the strict metric one (1000).
 
 To try to sort through of this mess, the new words kibibyte (and mebibyte, and
-gibibyte) were coined to mean $2^{10}$, $2^{20}$ and $2^{30}$. I have actually
-never heard anyone saying them out loud, but many programs use them
-(mostly their abbreviated forms KiB, MiB, and GiB). Everyone still says
-megabyte to mean $2^{20}$ bytes. In fact, if the difference would matter, we
-almost always mean the old convention as decimal notation is foreign to the
-computer world.
+gibibyte) were coined to mean $2^{10}$ (1024), $2^{20}$ and $2^{30}$. I have
+actually never heard anyone saying them out loud (so I cannot tell you how to
+pronounce them), but many programs use them (mostly their abbreviated forms
+KiB, MiB, and GiB). Everyone still says megabyte to mean $2^{20}$ bytes. In
+fact, if the difference would matter, we almost always mean the old convention
+as decimal notation is foreign to the computer world.
 
 After a few confusing years, we might get a new equilibrium between the old
 convention where everybody knew that kilobyte was 1024, the intermediate
-confusion where some people insisted on the non-standard standard of ``kilo is
-1000'' and nobody was ever sure what was meant, and a new compromise where we
+confusion where some people insisted on the non-conventional ``kilo is 1000''
+and nobody was ever sure what was meant, and a new compromise where we
 write ``MiB'' and read it as ``megabyte.''
 
 \section{Processor}
@@ -289,19 +330,31 @@ In the above, we imagined a processor with some very simple arithmetic
 instructions and some very simple conditional jump instructions. Actually,
 those are exactly the sort of instruction that a real processor has.
 
+As we have seen, we can use the basic instructions to build more complex ones.
+In fact, as we will see, most programming is done using much more complex
+languages than the simple one which the processor understands directly. Those
+complex constructions (in a more high-level programming language, of which
+there are many) are then translated into sequences of very simple instructions
+for the program to execute.
+
+The processor takes this sequence of simple instructions and executes them
+(that is, it performs the manipulation of values in memory cells that the
+program describes).
+
 \section{Representations}
 
 One obvious question is the following: where does this program live, how does
 it actually exist? A related question is: how can the computer represent
-anything other than numbers? We know that computers can save texts, pictures,
-sounds, and much more. In fact, it is not even clear how we could represent
-numbers greater than 255.
+anything other than numbers? From our previous experience with computers, we
+know that computers can save texts, pictures, sounds, and much more. In fact,
+it is not even clear how we could represent numbers greater than 255.
 
 To represent numbers greater than 255, we can simply use several cells
-together. If we use 2~cells, 2~bytes, we can get numbers with 16~bits; Using
-4~cells, we can get numbers with 32~bits (up to 4 billion, roughly); and with
-8~cells, we can get 64~bits. We could, of course, use a 5 byte number, but,
-typically, we do not do that.
+together. If we use 2~cells, 2~bytes, we can get numbers with 16~bits (up to 65
+thousand, more or less); Using 4~cells, we can get numbers with 32~bits (up to
+4 billion, roughly); and with 8~cells, we can get 64~bits. We could, of course,
+use a 5 byte number, but, typically, we do not do that, we use multiples of two
+(1, 2, 4, 8, \ldots).
 
 So, what about non-numbers?  The answer is very simple: we represent these
 things using numbers! If fact, for a computer, nothing else exists but
@@ -314,18 +367,24 @@ represent the title of this book:
 15 17 14 6 17 0 12 12 8 13 6 27 0 13 27 8 13 19 17 14 3 20 2 19 8 14 13
 
 In this case, I used 27 to represent a space. Real systems also have a way to
-encode punctuation and lower versus upper-case letters.
+encode punctuation and different values for lower and upper-case letters. We
+will spend a whole chapter on this issue as it is conceptually simple, but has
+many complex details.
 
 \medskip
 
 Pictures and sounds are also represented as a collection of numbers. A picture
-(a digital picture) is a rectangle of pixels (picture elements), which are
-small, single-colour blocks. We can represent each pixel with 3 numbers, one
-for the amount or red, one for green, and one for blue. Each pixel takes up 3
-bytes. If an image has 2048 pixels across and is 1344 pixels tall, then we need
-7.85 MiB to store it. The first byte will be the red component of the top-left
-corner, then the green and then the blue components. Repeat a few million times
-and you have a representation of an image.
+(a digital picture, that is) is a rectangle of pixels (picture elements), which
+are small, single-colour blocks. We can represent each pixel with 3 numbers,
+one for the amount or red, one for green, and one for blue. Each pixel takes up
+3 bytes. If an image has 2048 pixels across and is 1344 pixels tall, then we
+need 7.85 MiB to store it. The first byte will be the red component of the
+top-left corner, then the green and then the blue components. Repeat a few
+million times and you have a representation of an image.\footnote{If the image
+files in your computer take up less space, it is because they do not actually
+save all of the pixels all the time. Since pixels are often similar to nearby
+pixels, you can save some space by not actually storing all of them like this.
+We discuss this more in Volume~2.}
 
 We explore representation of data much more in later chapters. We will have a
 large discussion just on how to represent text.
@@ -353,10 +412,12 @@ the memory encodes the program that the processor is executing. The processor
 just performs the following, over and over again: (1) read the memory location
 for its next instruction, (2) execute it, eventually changing the value of
 other memory locations or the place that it is going to read its next
-instruction from. All of these instructions are very simple, but the processor
-can execute very many of them, very fast. A 2.3~GHz processor executes 2.3
-trillion instructions per second. If these words are about 30cm away from your
-eyes, then a modern processor will execute two instructions in the time it
+instruction from.
+
+All of these instructions are very simple, but the processor can execute very
+many of them, very fast. A 2.3~GHz processor executes 2.3 trillion instructions
+per second. Here is how fast it is: if these words are about 30cm away from
+your eyes, then a modern processor will execute two instructions in the time it
 takes the light to travel from these pages to your eyes. % This assumes light
 % in vaccuum; in air, it would actually be four instructions!
 
@@ -377,11 +438,15 @@ relevant values from memory, operate on them in registers, and, finally, write
 them back. In fact, some processor architectures only support this mode of
 operation (with no operations directly on memory allowed).
 
+Conceptually, though, registers are just a small number of memory cells, some
+of which have special meaning (like the instruction pointer), others are just
+much faster than the rest of the memory, but otherwise behave just the same.
+
 \section{Programming Languages}
 
 The basic programs we saw above were written in assembly language. Assembly is
-just one step above the actual numbers that the computer uses, it is simply a
-textual representation of them.
+just one step above the actual numbers that the computer uses, which is called
+\emph{machine language}, it is simply a textual representation of them.
 
 It is not a very flexible programming language and any program you write will
 only be adapted to that specific computer architecture.
@@ -414,15 +479,19 @@ Instead of being interpreted, a program can also be \emph{compiled}. This means
 that there is another program, the \emph{compiler}, which takes the text of the
 program, transforms it into the machine instructions which perform the
 operation just described and writes them out in machine code. Then, it can be
-directly executed by the machine, which can, potentially, be faster. The
-programs you use on a daily basis are a mixture of compiled and interpreted.
+directly executed by the machine, which can, potentially, be faster.
+
+The programs you use on a daily basis, such as web browsers or text processing
+suites, are a mixture of compiled and interpreted.
 
 At this point, you might be asking: how do you write a compiler or an
 interpreter? It seems you would need a compiler for that? How does the first
 compiler appear? The general technique is called \emph{bootstrapping} from the
 expression \emph{to pull yourself up by your bootstraps}. First, someone writes
 a compiler for a very simple language in assembly. Then, in that simple
-language, you can write compilers for more complex languages.
+language, you can write compilers for more complex languages. Then, in that
+language, you can write interpreters for other languages. It really is
+\emph{turtles all the way down}.
 
 \section{Magic}
 
