@@ -1,7 +1,7 @@
 \chapter{What is a Computer?}
 
 In this first chapter, before we actually do any real programming, we will look
-more closely under the hood at what a computer is.
+more closely at what a computer is.
 
 What is a computer? To the post office, it might be a four pound parcel; to the
 hardware engineer, a diagram of components, engineered to work together; for a
@@ -62,12 +62,13 @@ the actions. The technical word is \emph{execute}:
 \smallskip
 
 What we are doing here, as you may have figured out, is multiplying the two
-numbers in the first cells, by repeated addition. We transformed a basic
-operation (addition), into a slightly more complex operation (multiplication).
-This is what programming is: \emph{take some basic operations, that the
-computer processor can execute and build on it to perform a more complex
-operation}.\footnote{Nowadays, most processors already have instructions that
-perform multiplication, but at one point, they did use repeated addition.}
+numbers in the first cells, by repeated addition ($3\cdot4 = 12$). We
+transformed a basic operation (addition), into a slightly more complex
+operation (multiplication). This is what programming is: \emph{take some basic
+operations, that the computer processor can execute, and build on it to perform
+a more complex operation}.\footnote{Nowadays, most processors already have
+instructions that perform multiplication, but at one point, they did use
+repeated addition.}
 
 Here is how the previous program could look like in a more real programming
 language. In fact, this is almost a real programming language, albeit a
@@ -77,8 +78,8 @@ severely limited one:
 1. mov M[2], 0
 \end{verbatim}
 
-This moves the number zero to the cell $M[2]$. I will called the first cell 0,
-the second cell 1, and the third cell 2. This may seem strange, but there are
+This moves the number zero to the cell $M[2]$. I will call the first cell~0,
+the second cell~1, and the third cell~2. This may seem strange, but there are
 good reasons for starting to count at zero, so we might as well start
 now.\footnote{ E. Dijkstra, a computing pioneer, wrote a long article about
 this, available
@@ -123,7 +124,7 @@ from it).
 
 Finally, \instruction{jnz} stands for \emph{jump if not zero}. If the result of
 the previous operation (in this case, \instruction{dec}) is \emph{not zero},
-then it jumps to the instruction number $2$.
+then it jumps to the instruction number~2.
 
 \begin{exercise}
 How would you perform addition on a machine that has only a \instruction{inc}
